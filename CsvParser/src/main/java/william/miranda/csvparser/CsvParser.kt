@@ -24,6 +24,10 @@ import kotlin.reflect.full.starProjectedType
  */
 class CsvParser {
 
+    private companion object {
+        private const val DOUBLE_QUOTES = '"'
+    }
+
     /**
      * Container for all Type adapters that our Parser knows
      * We use this to use an instance of CsvTypeAdapter for a given type
@@ -75,38 +79,38 @@ class CsvParser {
         separator: Char
     ): CsvData {
         //Read the Data
-        val reader = inputStream.bufferedReader()
+        inputStream.bufferedReader().use { reader ->
+            //Lets take the 1st line for the Header and split based on the separator
+            //Also, clear the double quotes inside the values if we have them
+            val header = reader.readLine()
+                .split(separator)
+                .map { line -> line.filterNot { it == DOUBLE_QUOTES } }
 
-        //Lets take the 1st line and split based on the separator
-        //Lets clear the double quotes inside the values if we have them
-        val header = reader.readLine()
-            .split(separator)
-            .map { line -> line.filterNot { it == '"' } }
+            val headerSize = header.size
 
-        val headerSize = header.size
-
-        //Now take the records
-        //Also, clear the double quotes inside the values if we have them
-        val records = reader.lineSequence()
-            .filter { it.isNotBlank() } //Ignore empty lines
-            .map { line ->
-                line.split(separator) //Breaks the Record Columns
-                    .map {
-                    it.filterNot { it == '"' } //Clear double quotes
-                }.also { record ->
-                    //Ensure Column size matches the Header
-                    if (record.size != headerSize) {
-                        throw ColumnSizeMismatchException(line, headerSize)
-                    }
+            //Now take the records
+            //Also, clear the double quotes inside the values if we have them
+            val records = reader.lineSequence()
+                .filter { it.isNotBlank() } //Ignore empty lines
+                .map { line ->
+                    line.split(separator) //Breaks the Record Columns
+                        .map {
+                            it.filterNot { it == DOUBLE_QUOTES } //Clear double quotes
+                        }.also { record ->
+                            //Ensure Column size matches the Header
+                            if (record.size != headerSize) {
+                                throw ColumnSizeMismatchException(line, headerSize)
+                            }
+                        }
                 }
-            }
-            .toList()
+                .toList()
 
-        //Lets put everything inside our Data Structure
-        return CsvData(
-            header = header,
-            records = records
-        )
+            //Lets put everything inside our Data Structure
+            return CsvData(
+                header = header,
+                records = records
+            )
+        }
     }
 
     /**
@@ -116,7 +120,6 @@ class CsvParser {
         csvData: CsvData,
         clazz: KClass<T>
     ): List<T> {
-
         //Create the output List
         val recordList = mutableListOf<T>()
 
