@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Rabobank Assignment</string>
+    <string name="fetch_csv">Fetch CSV</string>
+</resources>
