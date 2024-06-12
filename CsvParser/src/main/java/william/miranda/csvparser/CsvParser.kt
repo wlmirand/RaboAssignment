@@ -78,6 +78,7 @@ class CsvParser {
         inputStream: InputStream,
         separator: Char
     ): CsvData {
+
         //Read the Data
         inputStream.bufferedReader().use { reader ->
             //Lets take the 1st line for the Header and split based on the separator
