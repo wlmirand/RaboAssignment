@@ -3,7 +3,9 @@ package william.miranda.downloader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import william.miranda.downloader.exception.DownloadErrorException
+import william.miranda.downloader.exception.UrlNotFoundException
 import java.io.File
+import java.io.FileNotFoundException
 import java.net.URL
 import javax.inject.Inject
 
@@ -19,9 +21,10 @@ class Downloader @Inject constructor(
         targetFile: File
     ) {
         withContext(dispatcher) {
-            URL(sourceUrl).openStream().use { inputStream ->
-                targetFile.outputStream().use { outputStream ->
-                    try {
+
+            try {
+                URL(sourceUrl).openStream().use { inputStream ->
+                    targetFile.outputStream().use { outputStream ->
                         val buffer = ByteArray(8 * 1024)
                         var bytesRead: Int
 
@@ -29,10 +32,12 @@ class Downloader @Inject constructor(
                         while ((inputStream.read(buffer).also { bytesRead = it }) != -1) {
                             outputStream.write(buffer, 0, bytesRead)
                         }
-                    } catch (ex: Exception) {
-                        throw DownloadErrorException(ex.message)
                     }
                 }
+            } catch (ex: FileNotFoundException) {
+                throw UrlNotFoundException(ex.message ?: "")
+            } catch (ex: Exception) {
+                throw DownloadErrorException(ex.message)
             }
         }
     }

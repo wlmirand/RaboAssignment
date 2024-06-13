@@ -26,6 +26,7 @@ class MainViewModel @Inject constructor(
 
     private companion object {
         private const val STATE_KEY = "State"
+        private const val SESSION_KEY = "Session"
         private const val TARGET_FILE = "file.csv"
         private const val PAGE_SIZE = 50
     }
@@ -45,7 +46,16 @@ class MainViewModel @Inject constructor(
          * if the Record number is too high, this may lead to issues
          */
         savedStateHandle.get<UiState>(STATE_KEY)?.let { _uiState.tryEmit(it) }
-        savedStateHandle.get<String>("session")?.let { parserSession = it }
+        savedStateHandle.get<String>(SESSION_KEY)?.let { parserSession = it }
+    }
+
+    /**
+     * Update the State and Persist into the savedStateHandler
+     */
+    private suspend fun updateState(state: UiState) {
+        savedStateHandle[STATE_KEY] = state
+        savedStateHandle[SESSION_KEY] = parserSession
+        _uiState.emit(state)
     }
 
     /**
@@ -57,21 +67,15 @@ class MainViewModel @Inject constructor(
 
             try {
                 _uiState.emit(UiState.Loading)
+                parserSession = UUID.randomUUID().toString()
 
                 downloadFile(csvFile = fileUrl)
-
-                parserSession = UUID.randomUUID().toString()
                 val models = parseUsers(parserSession)
 
-                UiState.Success(models).also {
-                    savedStateHandle[STATE_KEY] = it
-                    savedStateHandle["session"] = parserSession
-                    _uiState.emit(it)
-                }
+                updateState(UiState.Success(models))
             } catch (ex: Exception) {
-                _uiState.emit(UiState.Error(ex.message ?: ""))
+                updateState(UiState.Error(ex.message ?: ""))
             }
-
         }
     }
 
@@ -88,12 +92,9 @@ class MainViewModel @Inject constructor(
                 val moreUsers = parseUsers(parserSession)
                 val newList = currentUsers + moreUsers
 
-                UiState.Success(newList).also {
-                    savedStateHandle[STATE_KEY] = it
-                    _uiState.emit(it)
-                }
+                updateState(UiState.Success(newList))
             } catch (ex: Exception) {
-                _uiState.emit(UiState.Error(ex.message ?: ""))
+                updateState(UiState.Error(ex.message ?: ""))
             }
 
         }

@@ -7,15 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -23,19 +20,18 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
 import william.miranda.rabobankassignment.R
 import william.miranda.rabobankassignment.domain.model.User
+import william.miranda.rabobankassignment.ui.composable.FetchUrlComponent
 import william.miranda.rabobankassignment.ui.composable.ProgressIndicator
 import william.miranda.rabobankassignment.ui.composable.UserCard
 import william.miranda.rabobankassignment.ui.theme.RabobankAssignmentTheme
@@ -74,6 +70,18 @@ fun ScaffoldStructure(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar() {
+    TopAppBar(
+        colors = topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+        title = { Text(text = stringResource(id = R.string.app_name)) }
+    )
+}
+
 @Composable
 fun AppContent(
     modifier: Modifier,
@@ -82,19 +90,11 @@ fun AppContent(
     val uiState = mainViewModel.uiState.collectAsState()
 
     Column(modifier = modifier) {
-        var url by remember { mutableStateOf(DEFAULT_URL) }
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = url,
-            onValueChange = { url = it },
-            maxLines = 1
+
+        FetchUrlComponent(
+            urlString = DEFAULT_URL,
+            doneAction = { mainViewModel.downloadAndParse(it) }
         )
-        Button(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            onClick = { mainViewModel.downloadAndParse(url) }
-        ) {
-            Text(text = stringResource(id = R.string.fetch_csv))
-        }
 
         when (val stateValue = uiState.value) {
             is UiState.Success -> ListUsers(mainViewModel, stateValue.data)
@@ -106,18 +106,6 @@ fun AppContent(
     if (uiState.value is UiState.Loading) {
         ProgressIndicator()
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar() {
-    TopAppBar(
-        colors = topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-        ),
-        title = { Text(text = stringResource(id = R.string.app_name)) }
-    )
 }
 
 @Composable
@@ -152,10 +140,15 @@ fun DisplayError(
 ) {
     Column {
         Image(
+            modifier = Modifier.padding(24.dp),
             painter = painterResource(id = R.drawable.error),
             contentDescription = stringResource(id = R.string.error_image)
         )
-        Text(text = message)
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = message,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
