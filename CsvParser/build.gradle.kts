@@ -41,4 +41,5 @@ dependencies {
     implementation(kotlin("reflect"))
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
 }

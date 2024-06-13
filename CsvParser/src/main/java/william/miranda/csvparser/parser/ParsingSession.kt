@@ -14,6 +14,7 @@ import java.io.File
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.javaType
 
 class ParsingSession(
     private val file: File,
@@ -115,6 +116,11 @@ class ParsingSession(
         skipMalformedRecords: Boolean = false,
         clazz: KClass<T>
     ): List<T> {
+        //We are done
+        if (status == SessionStatus.FINISHED) {
+            return emptyList()
+        }
+
         //Gets a valid reader
         val reader = fileReader ?: throw FileNotOpenException()
 
