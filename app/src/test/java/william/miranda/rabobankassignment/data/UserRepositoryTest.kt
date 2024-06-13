@@ -14,7 +14,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
-import william.miranda.csvparser.CsvParser
+import william.miranda.csvparser.parser.CsvParser
 import william.miranda.rabobankassignment.data.model.UserModel
 import java.io.InputStream
 import java.net.URL
@@ -47,7 +47,7 @@ class UserRepositoryTest {
 
         every { url.openStream() } returns inputStream
         every {
-            csvParser.downloadAndParse(
+            csvParser.parseRecords(
                 inputStream = inputStream,
                 separator = ',',
                 UserModel::class
@@ -60,7 +60,7 @@ class UserRepositoryTest {
         }
 
         verify {
-            csvParser.downloadAndParse(
+            csvParser.parseRecords(
                 inputStream = inputStream,
                 separator = ',',
                 UserModel::class
@@ -76,7 +76,7 @@ class UserRepositoryTest {
 
         every { url.openStream() } returns inputStream
         every {
-            csvParser.downloadAndParse(
+            csvParser.parseRecords(
                 inputStream = inputStream,
                 separator = ',',
                 UserModel::class
@@ -90,7 +90,7 @@ class UserRepositoryTest {
         }
 
         verify {
-            csvParser.downloadAndParse(
+            csvParser.parseRecords(
                 inputStream = inputStream,
                 separator = ',',
                 UserModel::class

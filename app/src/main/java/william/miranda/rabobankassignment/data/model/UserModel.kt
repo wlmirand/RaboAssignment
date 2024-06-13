@@ -1,7 +1,7 @@
 package william.miranda.rabobankassignment.data.model
 
 import org.joda.time.LocalDateTime
-import william.miranda.csvparser.CsvField
+import william.miranda.csvparser.parser.CsvField
 
 /**
  * Model to hold Records from the Csv File

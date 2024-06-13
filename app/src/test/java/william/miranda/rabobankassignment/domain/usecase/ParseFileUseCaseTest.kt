@@ -14,9 +14,9 @@ import william.miranda.rabobankassignment.data.model.UserModel
 import william.miranda.rabobankassignment.domain.mapper.UserMapper
 import william.miranda.rabobankassignment.domain.model.User
 
-class GetUsersUseCaseTest {
+class ParseFileUseCaseTest {
 
-    private lateinit var underTest: GetUsersUseCase
+    private lateinit var underTest: ParseFileUseCase
 
     @MockK
     private lateinit var userRepository: UserRepository
@@ -27,7 +27,7 @@ class GetUsersUseCaseTest {
     @Before
     fun setup() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        underTest = GetUsersUseCase(
+        underTest = ParseFileUseCase(
             userRepository = userRepository,
             userMapper = userMapper
         )
@@ -59,7 +59,7 @@ class GetUsersUseCaseTest {
         val urlString = "http://some.url"
 
         runTest {
-            val result = underTest.get(urlString)
+            val result = underTest.run(urlString)
 
             assertEquals(result.size, repoList.size)
             assertEquals(result[0].firstName, repoList[0].firstName)

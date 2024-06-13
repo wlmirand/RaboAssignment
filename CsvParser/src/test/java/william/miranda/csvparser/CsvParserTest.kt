@@ -10,6 +10,8 @@ import william.miranda.csvparser.exceptions.ColumnSizeMismatchException
 import william.miranda.csvparser.exceptions.NoCsvFieldAnnotationException
 import william.miranda.csvparser.exceptions.NoHeaderMatchException
 import william.miranda.csvparser.exceptions.NoTypeAdapterRegisteredException
+import william.miranda.csvparser.parser.CsvField
+import william.miranda.csvparser.parser.CsvParser
 
 class CsvParserTest {
 
@@ -32,7 +34,7 @@ class CsvParserTest {
         underTest.registerTypeAdapter(Boolean::class, booleanTypeAdapter)
 
         val stream = javaClass.classLoader!!.getResource(VALID_CSV).openStream()
-        val result = underTest.downloadAndParse(
+        val result = underTest.parseRecords(
             inputStream = stream,
             separator = ',',
             ValidDataModel::class
@@ -54,7 +56,7 @@ class CsvParserTest {
         val stream = javaClass.classLoader!!.getResource(VALID_CSV).openStream()
 
         val exception = assertThrows(NoCsvFieldAnnotationException::class.java) {
-            underTest.downloadAndParse(
+            underTest.parseRecords(
                 inputStream = stream,
                 separator = ',',
                 NotAnnotatedDataModel::class
@@ -69,7 +71,7 @@ class CsvParserTest {
         val stream = javaClass.classLoader!!.getResource(VALID_CSV).openStream()
 
         val exception = assertThrows(NoTypeAdapterRegisteredException::class.java) {
-            underTest.downloadAndParse(
+            underTest.parseRecords(
                 inputStream = stream,
                 separator = ',',
                 ValidDataModel::class
@@ -86,7 +88,7 @@ class CsvParserTest {
         val stream = javaClass.classLoader!!.getResource(VALID_CSV).openStream()
 
         val exception = assertThrows(NoHeaderMatchException::class.java) {
-            underTest.downloadAndParse(
+            underTest.parseRecords(
                 inputStream = stream,
                 separator = ',',
                 BadHeaderDataModel::class
@@ -109,7 +111,7 @@ class CsvParserTest {
         val stream = javaClass.classLoader!!.getResource(NO_HEADER_CSV).openStream()
 
         val exception = assertThrows(NoHeaderMatchException::class.java) {
-            underTest.downloadAndParse(
+            underTest.parseRecords(
                 inputStream = stream,
                 separator = ',',
                 BadHeaderDataModel::class
@@ -125,7 +127,7 @@ class CsvParserTest {
 
         val stream = javaClass.classLoader!!.getResource(MISSING_COLUMNS).openStream()
         val exception = assertThrows(ColumnSizeMismatchException::class.java) {
-            underTest.downloadAndParse(
+            underTest.parseRecords(
                 inputStream = stream,
                 separator = ',',
                 ValidDataModel::class
@@ -141,7 +143,7 @@ class CsvParserTest {
 
         val stream = javaClass.classLoader!!.getResource(TYPE_MISMATCH).openStream()
         assertThrows(NumberFormatException::class.java) {
-            underTest.downloadAndParse(
+            underTest.parseRecords(
                 inputStream = stream,
                 separator = ',',
                 ValidDataModel::class

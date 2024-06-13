@@ -2,6 +2,7 @@ package william.miranda.rabobankassignment.domain.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.util.UUID
 
 /**
  * Model to hold Records this is the Model for the Business
@@ -10,6 +11,7 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class User(
+    val uuid: UUID = UUID.randomUUID(),
     val firstName: String,
     val surname: String,
     val issueCount: Int,

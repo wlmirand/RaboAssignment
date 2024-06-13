@@ -1,24 +1,36 @@
 package william.miranda.rabobankassignment.ui.main
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import william.miranda.rabobankassignment.domain.usecase.GetUsersUseCase
+import william.miranda.rabobankassignment.domain.model.User
+import william.miranda.rabobankassignment.domain.usecase.DownloadFileUseCase
+import william.miranda.rabobankassignment.domain.usecase.ParseFileUseCase
+import java.io.File
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val savedStateHandle: SavedStateHandle,
-    private val getUsersUseCase: GetUsersUseCase
+    private val parseFileUseCase: ParseFileUseCase,
+    private val downloadFileUseCase: DownloadFileUseCase
 ) : ViewModel() {
 
     private companion object {
         private const val STATE_KEY = "State"
+        private const val TARGET_FILE = "file.csv"
+        private const val PAGE_SIZE = 50
     }
+
+    private lateinit var parserSession: String
 
     /**
      * Flow to be observed
@@ -32,25 +44,51 @@ class MainViewModel @Inject constructor(
          * Note that we have a limit for Parcelable size to go into the Bundle so,
          * if the Record number is too high, this may lead to issues
          */
-        savedStateHandle.get<UiState>(STATE_KEY)?.let {
-            _uiState.tryEmit(it)
+        savedStateHandle.get<UiState>(STATE_KEY)?.let { _uiState.tryEmit(it) }
+        savedStateHandle.get<String>("session")?.let { parserSession = it }
+    }
+
+    /**
+     * Initial method called to start the process
+     * Here we call the Downloader and then Parse the initial Items defined on PAGE_SIZE
+     */
+    fun downloadAndParse(fileUrl: String) {
+        viewModelScope.launch {
+
+            try {
+                _uiState.emit(UiState.Loading)
+
+                downloadFile(csvFile = fileUrl)
+
+                parserSession = UUID.randomUUID().toString()
+                val models = parseUsers(parserSession)
+
+                UiState.Success(models).also {
+                    savedStateHandle[STATE_KEY] = it
+                    savedStateHandle["session"] = parserSession
+                    _uiState.emit(it)
+                }
+            } catch (ex: Exception) {
+                _uiState.emit(UiState.Error(ex.message ?: ""))
+            }
+
         }
     }
 
     /**
-     * Retrieve the Users and update the UiState
+     * Method to Request More items from the List
+     * Since the file was already downloaded, we need only to request new items from the Parser
+     * And, we need to manage all the Items here.
      */
-    fun fetchUsers() {
-
+    fun downloadMore() {
         viewModelScope.launch {
-            val csvFile =
-                "https://raw.githubusercontent.com/RabobankDev/AssignmentCSV/main/issues.csv"
-
-            _uiState.emit(UiState.Loading)
 
             try {
-                val model = getUsersUseCase.get(csvFile)
-                UiState.Success(model).also {
+                val currentUsers = uiState.value.data ?: emptyList()
+                val moreUsers = parseUsers(parserSession)
+                val newList = currentUsers + moreUsers
+
+                UiState.Success(newList).also {
                     savedStateHandle[STATE_KEY] = it
                     _uiState.emit(it)
                 }
@@ -59,6 +97,34 @@ class MainViewModel @Inject constructor(
             }
 
         }
+    }
+
+    /**
+     * Invoke the UseCase to Download the File
+     */
+    private suspend fun downloadFile(
+        csvFile: String
+    ) {
+        val targetFile = File(context.cacheDir, TARGET_FILE)
+
+        downloadFileUseCase.run(
+            sourceUrl = csvFile,
+            targetFile = targetFile
+        )
+    }
+
+    /**
+     * Invoke the UseCase to get more Users
+     */
+    private suspend fun parseUsers(
+        sessionName: String
+    ): List<User> {
+        val targetFile = File(context.cacheDir, TARGET_FILE)
+        return parseFileUseCase.run(
+            sessionName = sessionName,
+            file = targetFile,
+            pageSize = PAGE_SIZE
+        )
     }
 
 }
