@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -84,7 +86,7 @@ fun AppContent(
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = url,
-            onValueChange = {},
+            onValueChange = { url = it },
             maxLines = 1
         )
         Button(
@@ -148,7 +150,13 @@ fun ListUsers(
 fun DisplayError(
     message: String
 ) {
-    Text(text = message)
+    Column {
+        Image(
+            painter = painterResource(id = R.drawable.error),
+            contentDescription = stringResource(id = R.string.error_image)
+        )
+        Text(text = message)
+    }
 }
 
 @Preview(showBackground = true)

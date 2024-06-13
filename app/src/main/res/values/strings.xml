@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Rabobank Assignment</string>
     <string name="fetch_csv">Fetch CSV</string>
+    <string name="error_image">Error image</string>
 </resources>

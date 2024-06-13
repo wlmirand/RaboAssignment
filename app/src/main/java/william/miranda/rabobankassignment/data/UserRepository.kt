@@ -40,6 +40,7 @@ class UserRepository @Inject constructor(
             if (session.status == ParsingSession.SessionStatus.ONGOING) {
                 session.parseRecords(
                     pageSize = pageSize,
+                    skipMalformedRecords = true,
                     clazz = UserModel::class
                 )
             } else {
