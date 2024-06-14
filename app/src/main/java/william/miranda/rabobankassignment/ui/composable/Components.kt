@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -137,14 +138,17 @@ fun FetchUrlComponent(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
+                .padding(10.dp)
+                .testTag("TextField"),
             value = url,
             onValueChange = { url = it },
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = stringResource(id = R.string.clear_text),
-                    modifier = Modifier.clickable { url = "" }
+                    modifier = Modifier
+                        .clickable { url = "" }
+                        .testTag("TextFieldClear")
                 )
             },
             keyboardOptions = KeyboardOptions.Default.copy(
