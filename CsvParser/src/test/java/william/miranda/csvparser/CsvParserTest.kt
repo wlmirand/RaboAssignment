@@ -1,13 +1,17 @@
 package william.miranda.csvparser
 
-import io.mockk.mockk
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import william.miranda.csvparser.adapters.CsvTypeAdapter
 import william.miranda.csvparser.parser.CsvParser
+import william.miranda.csvparser.parser.ParsingSession
 import java.io.File
 
 class CsvParserTest {
+
+    private companion object {
+        private const val VALID_CSV = "Valid.csv"
+    }
 
     private lateinit var underTest: CsvParser
 
@@ -17,25 +21,21 @@ class CsvParserTest {
     }
 
     @Test
-    fun bla() {
+    fun `when a session is created, it is stored into the data structure and session is started`() {
         val sessionName = "MySession"
-        val file = mockk<File>()
+        val file = File(javaClass.classLoader!!.getResource(VALID_CSV).toURI())
         val separator = ','
 
-        val result = underTest.createSession(
+        val sessionCreated = underTest.createSession(
             sessionName = sessionName,
             file = file,
             separator = separator
         )
-    }
-}
 
-private val booleanTypeAdapter = object : CsvTypeAdapter<Boolean> {
-    override fun convert(value: String): Boolean {
-        return when (value) {
-            "true" -> true
-            "false" -> false
-            else -> throw RuntimeException("Bad Boolean")
-        }
+        val sessionRetrieved = underTest.getSession(sessionName)
+
+        assertEquals(sessionCreated, sessionRetrieved)
+        assertEquals(sessionCreated.status, ParsingSession.SessionStatus.ONGOING)
+        assertEquals(sessionCreated.name, sessionName)
     }
 }

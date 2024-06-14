@@ -1,4 +1,4 @@
-package william.miranda.csvparser.adapters
+package william.miranda.csvparser.adapter
 
 class DoubleTypeAdapter: CsvTypeAdapter<Double> {
 

@@ -2,7 +2,7 @@ package william.miranda.rabobankassignment.data.adapter
 
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
-import william.miranda.csvparser.adapters.CsvTypeAdapter
+import william.miranda.csvparser.adapter.CsvTypeAdapter
 
 /**
  * Adapter that tells our Csv Library how to convert a String into a LocalDateTime from Joda

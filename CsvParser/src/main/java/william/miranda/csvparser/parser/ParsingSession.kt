@@ -1,6 +1,6 @@
 package william.miranda.csvparser.parser
 
-import william.miranda.csvparser.adapters.CsvTypeAdapter
+import william.miranda.csvparser.adapter.CsvTypeAdapter
 import william.miranda.csvparser.exceptions.ColumnSizeMismatchException
 import william.miranda.csvparser.exceptions.EmptyHeaderException
 import william.miranda.csvparser.exceptions.FileNotExistsException
@@ -14,11 +14,11 @@ import java.io.File
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.javaType
 
 class ParsingSession(
-    private val file: File,
-    private val separator: Char,
+    val name: String,
+    val file: File,
+    val separator: Char,
     private val adapters: Map<KType, CsvTypeAdapter<Any>>
 ) {
     private companion object {

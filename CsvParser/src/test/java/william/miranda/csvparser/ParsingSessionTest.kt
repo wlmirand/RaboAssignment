@@ -8,8 +8,9 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import william.miranda.csvparser.adapters.CsvTypeAdapter
+import william.miranda.csvparser.adapter.CsvTypeAdapter
 import william.miranda.csvparser.exceptions.ColumnSizeMismatchException
+import william.miranda.csvparser.exceptions.FileNotExistsException
 import william.miranda.csvparser.exceptions.NoCsvFieldAnnotationException
 import william.miranda.csvparser.exceptions.NoHeaderMatchException
 import william.miranda.csvparser.exceptions.NoTypeAdapterRegisteredException
@@ -44,11 +45,29 @@ class ParsingSessionTest {
     }
 
     @Test
+    fun `when the file does not exist Then Get the Exception`() {
+        every { adapters[Boolean::class.starProjectedType] } returns booleanTypeAdapter
+        val file = File("/sdcard/FileNotExist.csv")
+
+        val exception = assertThrows(FileNotExistsException::class.java) {
+            underTest = ParsingSession(
+                name = "MySession",
+                file = file,
+                separator = separator,
+                adapters = adapters
+            )
+        }
+
+        assertTrue(exception.message!!.contains("FileNotExist.csv"))
+    }
+
+    @Test
     fun `when Csv Is Valid And Model Is Valid Then Parse With Success`() {
         val file = File(javaClass.classLoader!!.getResource(VALID_CSV).toURI())
         every { adapters[Boolean::class.starProjectedType] } returns booleanTypeAdapter
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters
@@ -75,6 +94,7 @@ class ParsingSessionTest {
         every { adapters[Boolean::class.starProjectedType] } returns booleanTypeAdapter
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters
@@ -97,6 +117,7 @@ class ParsingSessionTest {
         every { adapters[Boolean::class.starProjectedType] } returns null
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters
@@ -119,6 +140,7 @@ class ParsingSessionTest {
         every { adapters[Boolean::class.starProjectedType] } returns booleanTypeAdapter
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters
@@ -147,6 +169,7 @@ class ParsingSessionTest {
         every { adapters[Boolean::class.starProjectedType] } returns booleanTypeAdapter
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters
@@ -168,6 +191,7 @@ class ParsingSessionTest {
         every { adapters[Boolean::class.starProjectedType] } returns booleanTypeAdapter
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters
@@ -190,6 +214,7 @@ class ParsingSessionTest {
         every { adapters[Boolean::class.starProjectedType] } returns booleanTypeAdapter
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters
@@ -213,6 +238,7 @@ class ParsingSessionTest {
         val file = File(javaClass.classLoader!!.getResource(TYPE_MISMATCH).toURI())
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters
@@ -232,6 +258,7 @@ class ParsingSessionTest {
         every { adapters[Boolean::class.starProjectedType] } returns booleanTypeAdapter
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters
@@ -264,6 +291,7 @@ class ParsingSessionTest {
         every { adapters[Boolean::class.starProjectedType] } returns booleanTypeAdapter
 
         underTest = ParsingSession(
+            name = "MySession",
             file = file,
             separator = separator,
             adapters = adapters

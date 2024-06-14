@@ -1,9 +1,9 @@
 package william.miranda.csvparser.parser
 
-import william.miranda.csvparser.adapters.CsvTypeAdapter
-import william.miranda.csvparser.adapters.DoubleTypeAdapter
-import william.miranda.csvparser.adapters.IntTypeAdapter
-import william.miranda.csvparser.adapters.StringTypeAdapter
+import william.miranda.csvparser.adapter.CsvTypeAdapter
+import william.miranda.csvparser.adapter.DoubleTypeAdapter
+import william.miranda.csvparser.adapter.IntTypeAdapter
+import william.miranda.csvparser.adapter.StringTypeAdapter
 import java.io.File
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -58,6 +58,7 @@ class CsvParser {
         file: File,
         separator: Char
     ) = ParsingSession(
+        name = sessionName,
         file = file,
         separator = separator,
         adapters = adapters

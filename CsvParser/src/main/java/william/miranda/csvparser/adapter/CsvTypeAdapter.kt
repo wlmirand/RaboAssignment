@@ -1,4 +1,4 @@
-package william.miranda.csvparser.adapters
+package william.miranda.csvparser.adapter
 
 /**
  * Interface that defines the TypeAdapters, to convert a String to a given type
