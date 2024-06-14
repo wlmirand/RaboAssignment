@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import william.miranda.rabobankassignment.domain.model.User
 import william.miranda.rabobankassignment.domain.usecase.DownloadFileUseCase
@@ -37,7 +38,7 @@ class MainViewModel @Inject constructor(
      * Flow to be observed
      */
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
-    val uiState: StateFlow<UiState> = _uiState
+    val uiState = _uiState.asStateFlow()
 
     init {
         /**
@@ -68,8 +69,8 @@ class MainViewModel @Inject constructor(
             try {
                 _uiState.emit(UiState.Loading)
                 parserSession = UUID.randomUUID().toString()
-
                 downloadFile(csvFile = fileUrl)
+
                 val models = parseUsers(parserSession)
 
                 updateState(UiState.Success(models))
