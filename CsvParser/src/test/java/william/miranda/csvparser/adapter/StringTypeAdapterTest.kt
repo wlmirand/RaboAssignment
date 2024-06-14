@@ -6,7 +6,7 @@ import org.junit.Test
 
 class StringTypeAdapterTest {
 
-    lateinit var underTest: StringTypeAdapter
+    private lateinit var underTest: StringTypeAdapter
 
     @Before
     fun setup() {

@@ -7,7 +7,7 @@ import org.junit.Test
 
 class IntTypeAdapterTest {
 
-    lateinit var underTest: IntTypeAdapter
+    private lateinit var underTest: IntTypeAdapter
 
     @Before
     fun setup() {

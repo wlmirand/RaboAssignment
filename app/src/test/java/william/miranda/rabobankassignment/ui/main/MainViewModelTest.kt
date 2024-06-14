@@ -24,11 +24,10 @@ import org.junit.rules.TemporaryFolder
 import william.miranda.rabobankassignment.domain.model.User
 import william.miranda.rabobankassignment.domain.usecase.DownloadFileUseCase
 import william.miranda.rabobankassignment.domain.usecase.ParseFileUseCase
-import java.io.File
 
 class MainViewModelTest {
 
-    lateinit var underTest: MainViewModel
+    private lateinit var underTest: MainViewModel
 
     @MockK
     private lateinit var context: Context
@@ -41,9 +40,6 @@ class MainViewModelTest {
 
     @MockK
     private lateinit var downloadFileUseCase: DownloadFileUseCase
-
-    @MockK
-    private lateinit var cacheFile: File
 
     @JvmField
     @Rule
@@ -268,10 +264,10 @@ class MainViewModelTest {
         uiState: UiState?,
         session: String?
     ) {
-        val STATE_KEY = "State"
-        val SESSION_KEY = "Session"
+        val stateKey = "State"
+        val sessionKey = "Session"
 
-        every { savedStateHandle.get<UiState>(STATE_KEY) } returns uiState
-        every { savedStateHandle.get<String>(SESSION_KEY) } returns session
+        every { savedStateHandle.get<UiState>(stateKey) } returns uiState
+        every { savedStateHandle.get<String>(sessionKey) } returns session
     }
 }

@@ -7,7 +7,7 @@ import org.junit.Test
 
 class DoubleTypeAdapterTest {
 
-    lateinit var underTest: DoubleTypeAdapter
+    private lateinit var underTest: DoubleTypeAdapter
 
     @Before
     fun setup() {
